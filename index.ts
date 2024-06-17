@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /* eslint-disable import/no-extraneous-dependencies */
+
 import { cyan, green, red } from "picocolors";
 import Commander from "commander";
 import prompts from "prompts";

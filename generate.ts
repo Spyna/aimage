@@ -1,9 +1,9 @@
 import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
-import axios from "axios";
 import ora from "ora";
 import { cyan, green, red } from "picocolors";
+import undici from "undici";
 
 async function sleep() {
   return new Promise((resolve) => setTimeout(resolve, 3000));
@@ -49,7 +49,7 @@ export async function generateImage(prompt: string) {
     console.log(green("✔ image generated:"), image_url);
     console.log();
     spinner.stop();
-    spinner.text = "downlaoding image...";
+    spinner.text = "downloading image...";
     spinner.start();
 
     const filename = `images/${fileName}-${index}.png`;
@@ -70,6 +70,11 @@ async function saveImage(image_url: string, filename: string) {
   }
 
   const imagePath = path.join(folderPath, path.basename(filename));
-  const response = await axios.get(image_url, { responseType: "arraybuffer" });
-  fs.writeFileSync(imagePath, response.data);
+  const { body } = await undici.request(image_url);
+  const writeStream = fs.createWriteStream(imagePath);
+  body.pipe(writeStream);
+  await new Promise((resolve, reject) => {
+    writeStream.on("finish", resolve);
+    writeStream.on("error", reject);
+  });
 }
