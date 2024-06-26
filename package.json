@@ -20,10 +20,10 @@
     "dist"
   ],
   "scripts": {
-    "dev": "ncc build ./index.ts -w -o dist/",
+    "dev": "ncc build ./src/index.ts -w -o dist/",
     "prerelease": "node ../../scripts/rm.mjs dist",
-    "release": "ncc build ./index.ts -o ./dist/ --external --no-cache",
-    "build": "rimraf dist && ncc build -e commander -e undici -e openai -e ora -e picocolors  ./index.ts -o dist/"
+    "release": "ncc build ./src/index.ts -o ./dist/ --external --no-cache",
+    "build": "rimraf dist && ncc build -e commander -e undici -e openai -e ora -e picocolors  ./src/index.ts -o dist/"
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.5",
@@ -52,6 +52,7 @@
     "ora": "^8.0.1",
     "picocolors": "^1.0.1",
     "rimraf": "^5.0.7",
-    "undici": "^6.19.0"
+    "undici": "^6.19.0",
+    "zod": "^3.23.8"
   }
 }

@@ -4,12 +4,13 @@ import path from "path";
 import ora from "ora";
 import { cyan, green, red } from "picocolors";
 import undici from "undici";
+import { GenerationRequest } from "./domain";
 
 async function sleep() {
   return new Promise((resolve) => setTimeout(resolve, 3000));
 }
 
-export async function generateImage(prompt: string) {
+export async function generateImage({ prompt, options }: GenerationRequest) {
   if (!process.env.OPENAI_API_KEY) {
     console.log(
       `\n${red("Please set the")} ${cyan("OPENAI_API_KEY")} ${red("environment variable to use this tool.")}\n`
@@ -21,9 +22,10 @@ export async function generateImage(prompt: string) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   const response = await openai.images.generate({
-    model: "dall-e-3",
+    model: options.model,
     prompt: prompt,
     n: 1,
+    size: options.size,
   });
   spinner.stop();
   spinner.text = "generating filename...";
@@ -41,7 +43,6 @@ export async function generateImage(prompt: string) {
   spinner.stop();
   for (let index = 0; index < response.data.length; index++) {
     const message = response.data[index];
-    // console.log(message);
     console.log(green("revised prompt:\n"), message.revised_prompt);
     console.log();
 
@@ -52,12 +53,12 @@ export async function generateImage(prompt: string) {
     spinner.text = "downloading image...";
     spinner.start();
 
-    const filename = `images/${fileName}-${index}.png`;
+    const filename = `${options.folder}/${fileName}-${index}.png`;
     await saveImage(image_url!, filename);
     spinner.stop();
     console.log(green(`✔ Image saved successfully in`), filename);
     fs.writeFileSync(
-      `images/${fileName}-${index}.txt`,
+      `${options.folder}/${fileName}-${index}.txt`,
       message.revised_prompt ?? prompt
     );
   }

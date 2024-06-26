@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 /* eslint-disable import/no-extraneous-dependencies */
 
-import { cyan, green, red } from "picocolors";
+import { cyan, red } from "picocolors";
 import Commander from "commander";
 import prompts from "prompts";
 import type { InitialReturnValue } from "prompts";
-import packageJson from "./package.json";
+import packageJson from "../package.json";
 import { generateImage } from "./generate";
+import { GenerationRequest, Options } from "./domain";
+import { validate } from "./validation";
 
 const handleSigTerm = () => process.exit(0);
 
@@ -19,36 +21,35 @@ const onPromptState = (state: {
   exited: boolean;
 }) => {
   if (state.aborted) {
-    // If we don't re-enable the terminal cursor before exiting
-    // the program, the cursor will remain hidden
     process.stdout.write("\x1B[?25h");
     process.stdout.write("\n");
     process.exit(1);
   }
 };
 
-let outputFilePath: string;
-
 const program = new Commander.Command(packageJson.name)
   .version(packageJson.version)
-  .arguments("<the prompt to generate the image>")
-  .usage(`${green("<prompt>")} [options]`)
-  .action((outFile) => {
-    console.log("outFile", outFile);
-    outputFilePath = outFile;
-  })
   .option(
-    "--f, --file",
-    `
-
-  Saves the generated image in the specified file.
-`
+    "-s, --size <size>",
+    "Size of the image to generate: 256x256 | 512x512 | 1024x1024 | 1792x1024 | 1024x1792",
+    "1024x1024"
   )
+  .option(
+    "-m, --model <model>",
+    "The model to use: dall-e-3 / dall-e-2",
+    "dall-e-3"
+  )
+  .option(
+    "-f, --folder <folder>",
+    `Saves the generated image in the specified folder`,
+    "./images"
+  )
+  .usage(`[options]`)
   .allowUnknownOption()
   .parse(process.argv);
 
-async function run(): Promise<string> {
-  const sentences = [];
+async function run(): Promise<GenerationRequest> {
+  validate(program.opts());
 
   const res = await prompts({
     onState: onPromptState,
@@ -59,7 +60,7 @@ async function run(): Promise<string> {
     validate: (value) => (value ? true : "Please insert a sentence"),
   });
 
-  return res.prompt;
+  return { prompt: res.prompt, options: program.opts() as Options };
 }
 
 run()

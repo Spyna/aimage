@@ -5,7 +5,6 @@ Welcome to the Node CLI project for creating images using the OpenAI API DALL-E.
 ## Table of Contents
 
 - [Usage](#usage)
-- [Installation](#installation)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [Development](#development)
@@ -32,28 +31,20 @@ npx aimage --prompt "A description of the image you want to generate"
 ## Configuration
 Ensure you set the environment variable `OPENAI_API_KEY` with your OpenAI API key.
 
-### Example
+### Parameters
 
-```bash
-export OPENAI_API_KEY=your-openai-api-key
-npx aimage --prompt "A futuristic cityscape at sunset"
+```shell
+Usage: aimage [options]
+
+Options:
+  -V, --version           output the version number
+  -s, --size <size>       Size of the image to generate: 256x256 | 512x512 | 1024x1024 | 1792x1024 | 1024x1792 (default: "1024x1024")
+  -m, --model <model>     The model to use: dall-e-3 / dall-e-2 (default: "dall-e-3")
+  --f, --folder <folder>  Saves the generated image in the specified folder (default: "./images")
+  -h, --help              output usage information
+
+
 ```
-
-## Installation
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- OpenAI API Key
-
-### Steps
-
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/your-username/node-cli-dalle.git
-   cd node-cli-dalle
-
-
 ## Contributing
 We welcome contributions! Please follow these steps to contribute:
 
@@ -68,18 +59,9 @@ Please ensure your code adheres to our coding standards and passes all tests.
 ## Development
 
 ```
-yarn
-# npm isntall
 yarn dev
-#npm run dev
 ```
 
 ```
 node dist/index.js
 ```
-
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE] file for details.
-
